@@ -1,6 +1,7 @@
 package utils
 
 import (
+	"encoding/json"
 	"strings"
 
 	"golang.org/x/net/html"
@@ -36,6 +37,17 @@ func walk(n *html.Node) string {
 	return content
 }
 
-func ParseJSON(jsonContent string) string {
-	return jsonContent
+func ParseJSON(jsonContent string) []byte {
+	var jsonMap map[string]interface{}
+	err := json.Unmarshal([]byte(jsonContent), &jsonMap)
+	if err != nil {
+		panic("Error parsing JSON")
+	}
+
+	formattedJSON, err := json.MarshalIndent(jsonMap, "", "    ")
+	if err != nil {
+		panic("Error generating formatted JSON:")
+	}
+
+	return formattedJSON
 }

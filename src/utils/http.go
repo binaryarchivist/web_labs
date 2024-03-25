@@ -89,6 +89,7 @@ func SendHTTPRequest(method, rawURL string, redirectCount int8) (body string, er
 
 	switch statusCode {
 	case 301:
+		fmt.Println("statusCode: ", statusCode)
 		for _, line := range strings.Split(headers, "\n") {
 			if strings.HasPrefix(line, "Location:") {
 				locationURL := strings.TrimSpace(strings.SplitN(line, ":", 2)[1])
@@ -124,7 +125,7 @@ func SendHTTPRequest(method, rawURL string, redirectCount int8) (body string, er
 	if strings.Contains(contentType, "text/html") {
 		parsedContent = ParseHTML(body)
 	} else if strings.Contains(contentType, "application/json") {
-		parsedContent = ParseJSON(body)
+		parsedContent = string(ParseJSON(body))
 	}
 
 	Set(rawURL, parsedContent)
