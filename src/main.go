@@ -1,58 +1,40 @@
 package main
 
 import (
-	"bufio"
+	"flag"
 	"fmt"
 	"go2web/src/utils"
 	"net/url"
 	"os"
-	"strings"
+)
+
+var (
+	urlFlag    = flag.String("u", "", "URL to fetch")
+	searchTerm = flag.String("s", "", "Search term for Google search")
+	showHelp   = flag.Bool("h", false, "Show help message")
 )
 
 func main() {
-	reader := bufio.NewReader(os.Stdin)
-	for {
-		fmt.Print("go2web> ")
-		input, _ := reader.ReadString('\n')
-		input = strings.TrimSpace(input)
-		args := strings.Split(input, " ")
+	flag.Parse()
 
-		if len(args) == 0 {
-			continue
-		}
+	if *showHelp || len(os.Args) <= 1 {
+		fmt.Println("Usage of go2web:")
+		flag.PrintDefaults()
+		return
+	}
 
-		switch args[0] {
-		case "-u":
-			if len(args) != 2 {
-				fmt.Println("Usage: -u <URL>")
-				continue
-			}
-			url := args[1]
-			result, _ := utils.SendHTTPRequest("GET", url, 0)
-			fmt.Println(result)
-
-		case "-s":
-			if len(args) < 2 {
-				fmt.Println("Usage: -s <search-term>")
-				continue
-			}
-			searchTerm := strings.Join(args[1:], " ")
-
-			url, _ := url.Parse("https://google.com/")
-			query := url.Query()
-			query.Add("search", searchTerm)
-			url.RawQuery = query.Encode()
-
-			// result, _ := utils.GetLinksFromGoogle(url)
-			// fmt.Println(result)
-
-		case "-h":
-			fmt.Println("Help message...")
-		case "exit":
-			fmt.Println("Exiting...")
+	if *urlFlag != "" {
+		result, err := utils.SendHTTPRequest("GET", *urlFlag, 0)
+		if err != nil {
+			fmt.Println("Error fetching URL:", err)
 			return
-		default:
-			fmt.Println("Unknown command:", args[0])
 		}
+		fmt.Println(result)
+	} else if *searchTerm != "" {
+		fmt.Println("Search functionality not implemented.")
+		url := "https://google.com/search?q=" + url.QueryEscape(*searchTerm)
+		fmt.Println("Search URL would be:", url)
+	} else {
+		fmt.Println("No operation specified. Use -h for help.")
 	}
 }

@@ -11,7 +11,7 @@ import (
 )
 
 func SendHTTPRequest(method, rawURL string, redirectCount int8) (body string, err error) {
-	if val, ok := Get(rawURL); ok {
+	if val, ok, _ := Get(rawURL); ok {
 		return val, nil
 	}
 	if redirectCount == 5 {
