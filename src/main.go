@@ -4,6 +4,7 @@ import (
 	"bufio"
 	"fmt"
 	"go2web/src/utils"
+	"net/url"
 	"os"
 	"strings"
 )
@@ -27,15 +28,24 @@ func main() {
 				continue
 			}
 			url := args[1]
-			fmt.Println("Fetching URL:", url)
-			fmt.Println(utils.SendHTTPRequest("GET", url))
+			result, _ := utils.SendHTTPRequest("GET", url, 0)
+			fmt.Println(result)
+
 		case "-s":
 			if len(args) < 2 {
 				fmt.Println("Usage: -s <search-term>")
 				continue
 			}
 			searchTerm := strings.Join(args[1:], " ")
-			fmt.Println("Searching for:", searchTerm)
+
+			url, _ := url.Parse("https://google.com/")
+			query := url.Query()
+			query.Add("search", searchTerm)
+			url.RawQuery = query.Encode()
+
+			// result, _ := utils.GetLinksFromGoogle(url)
+			// fmt.Println(result)
+
 		case "-h":
 			fmt.Println("Help message...")
 		case "exit":
